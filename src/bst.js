@@ -109,12 +109,15 @@ export default class BST {
   // returns: void
   insert(value) {
     if(this.root === undefined) {
+      ElementsModifier.setActionMessage("Tree is empty. Let " + value + " be the root.")
+
       this.height = 1
       this.root = new Node(value, {x: this.position.x, y: this.position.y}, this.nodeSize, this)
     } else {
 
-
       if(this.shadedNode === undefined) {
+        ElementsModifier.setActionMessage("Search for " + value + " in the tree...")
+
         this.shadedNode = this.root
         this.currInsertVal = value
         this.state = this.STATES.INSERT
@@ -205,7 +208,7 @@ export default class BST {
           if(this.shadedNode === this.shadedNodeParent.left) {
             BST.deleteLeft(this.shadedNodeParent, this)
           } else {
-            BST.deleteRight(this.shadedNodeParent)
+            BST.deleteRight(this.shadedNodeParent, this)
           }
           this.shadedNode = undefined
           this.currDeleteVal = undefined
@@ -236,7 +239,6 @@ export default class BST {
   // deletes the left child
   // fixes the tree
   // assumes left is a node (not undefined)
-  // returns the node that will be in the place of the deleted node. Else, undefined
   static deleteLeft(node, bstTree) {
     let toDelete = node.left
     if(toDelete.left === undefined && toDelete.right === undefined) {    // leaf deletion
@@ -257,22 +259,45 @@ export default class BST {
       node.left = definedGrandSon
       bstTree.shadedNodeParent = undefined
       bstTree.state = bstTree.STATES.DELETING
-      bstTree.root.setPositions()
 
     } else { // two child case: node.left has both childs
       bstTree.state = bstTree.STATES.FINDINORDER // red node stays red
 
-      ElementsModifier.setActionMessage(" Finding in order successor of  " + toDelete.value + " ...")
+      ElementsModifier.setActionMessage("Finding in order successor of  " + toDelete.value + " ...")
       bstTree.toBeDeletedInOrderSuccessor = toDelete.right
-      bstTree.findLeftMostGrandson()
     }
   }
 
-  // deletes the left child
+  // deletes the right child
   // fixes the tree
   // assumes right is a node (not undefined)
-  static deleteRight(node) {
+  static deleteRight(node, bstTree) {
+    let toDelete = node.right //
+    if(toDelete.left === undefined && toDelete.right === undefined) {    // leaf deletion
+      node.right = undefined //
+      bstTree.shadedNodeParent = undefined
+      bstTree.state = bstTree.STATES.DELETING
 
+    } else if(toDelete.left === undefined || toDelete.right === undefined) { // single child case
+      let definedGrandSon;
+
+      if(toDelete.left === undefined) {
+        definedGrandSon = toDelete.right
+      } else { // when (toDelete.right === undefined)
+        definedGrandSon = toDelete.left
+      }
+
+      //make the right child of node be the grandson
+      node.right = definedGrandSon
+      bstTree.shadedNodeParent = undefined
+      bstTree.state = bstTree.STATES.DELETING
+
+    } else { // two child case: node.left has both childs
+      bstTree.state = bstTree.STATES.FINDINORDER // red node stays red
+
+      ElementsModifier.setActionMessage("Finding in order successor of  " + toDelete.value + " ...")
+      bstTree.toBeDeletedInOrderSuccessor = toDelete.right
+    }
   }
 
   // note: toDelte is the same as this.toBeDeletedNode
@@ -282,7 +307,7 @@ export default class BST {
       this.toBeDeletedInOrderSuccessor = this.toBeDeletedInOrderSuccessor.left // will be toDelete.right.left after first iter
 
     } else { // now we reached the end, deleting...
-      ElementsModifier.setActionMessage(this.toBeDeletedInOrderSuccessor + " is the in order successor of  " + toDelete.value)
+      ElementsModifier.setActionMessage(this.toBeDeletedInOrderSuccessor.value + " is the in order successor of  " + this.toBeDeletedNode.value + ". Swithing values...")
 
       if(this.parentOfInOrderSuccessor === undefined) { // when the above never runs, so toBeDeleted.right.left === undefined
         // this.toBeDeletedNode.right is the in order successor
@@ -291,7 +316,16 @@ export default class BST {
         this.parentOfInOrderSuccessor.left = this.toBeDeletedInOrderSuccessor.right
         this.parentOfInOrderSuccessor = undefined // no longer needed
       }
+      // swithing..
+      let temp = this.toBeDeletedNode.value
       this.toBeDeletedNode.value = this.toBeDeletedInOrderSuccessor.value
+      this.toBeDeletedInOrderSuccessor.value = temp
+
+      //switching colors...
+      let tempNode = this.toBeDeletedInOrderSuccessor
+      this.toBeDeletedInOrderSuccessor = this.toBeDeletedNode
+      this.toBeDeletedNode = tempNode
+
       this.doNotUpdate = true
       this.state = this.STATES.DELETING
     }
