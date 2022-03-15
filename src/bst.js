@@ -179,6 +179,7 @@ export default class BST {
     } else {
 
       if(this.shadedNode === undefined) {
+        ElementsModifier.setActionMessage("Search for " + value + " in the tree...")
         this.shadedNode = this.root
         this.currDeleteVal = value
         this.state = this.STATES.DELETE_FIND
