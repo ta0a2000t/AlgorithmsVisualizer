@@ -9,8 +9,8 @@ table {
   border-width: 15px;
   border-color: #80d6c9;
   background-color: rgba(0, 255, 0, 0.25);
-
 }
+
 th {
   border: 5px solid blue;
 }
@@ -21,4 +21,21 @@ td {
 
 td:hover {
   background-color: rgba(0, 255, 0, 0.6);
+}
+
+input[type="text"] {
+  width: 30px;
+  height: 20px;
+}
+
+#actionBox {
+  border: 2px solid blue;
+  width: 700px;
+  margin-left: 300px;
+  font-style: oblique;
+}
+
+#actionMessage {
+  display: inline;
+  font-style: normal;
 }

@@ -27,11 +27,11 @@ export default class ContextFunctions {
         if(innerText.length >= maxCharLength) {
           break
         }
-        innerText = innerText + " "
+        //innerText = innerText + " "
       }
       // now innerText is of length maxCharLength
       ctx.fillStyle = "black"
-      ctx.fillText(innerText, x - radius/2, y + radius/3)
+      ctx.fillText(innerText, x - radius/1.7, y + radius/3)
 
     }
 }

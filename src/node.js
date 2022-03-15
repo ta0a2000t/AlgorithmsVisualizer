@@ -137,9 +137,12 @@ export default class Node {
 
     // start from leftmost leaf
     const treeHeight = allLevels.length
-    if(treeHeight > this.tree.height) {
+    if(treeHeight > this.tree.height) { // when level increases
       this.tree.setHeight(treeHeight)
       this.tree.moveLeftDown()
+    } else if(treeHeight < this.tree.height) { // when level decreases
+      this.tree.setHeight(treeHeight)
+      this.tree.moveRightUp()
     }
 
     // set the positions of the leafs
@@ -168,7 +171,10 @@ export default class Node {
     }
 
 
-
   }
+
+
+
+
 
 }
