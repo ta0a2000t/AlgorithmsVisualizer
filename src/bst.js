@@ -45,7 +45,7 @@ export default class BST {
   }
 
   update(deltaTime) {
-
+    console.log(this.state)
     if(this.state === this.STATES.INSERT) {
       if(this.doNotUpdate === false) {
         this.insert(this.currInsertVal)
@@ -63,14 +63,20 @@ export default class BST {
           this.toBeDeletedNode = undefined
           this.toBeDeletedInOrderSuccessor = undefined // for the 2 child case
           this.state = this.STATES.NOACTION
-          this.root.setPositions() // fixes the positions
-          this.height = this.root.getHeight()
+          if(this.root !== undefined) { // does not run when deleted root and now tree is empty
+            this.root.setPositions() // fixes the positions
+            this.height = this.root.getHeight()
+          } else {
+            this.height = 0
+          }
 
         } else {
           this.doNotUpdate = false
         }
       } else if(this.state === this.STATES.FINDINORDER) {
         this.findLeftMostGrandson()
+      } else if(this.state === this.STATES.NOACTION) {
+        ElementsModifier.setActionMessage("No action.")
       }
   }
 
@@ -112,6 +118,8 @@ export default class BST {
       ElementsModifier.setActionMessage("Tree is empty. Let " + value + " be the root.")
 
       this.height = 1
+      this.doNotUpdate = true
+
       this.root = new Node(value, {x: this.position.x, y: this.position.y}, this.nodeSize, this)
     } else {
 
@@ -163,14 +171,10 @@ export default class BST {
     if(this.root === undefined) {
       ElementsModifier.setActionMessage(value + " Not Found")
       return // nothing to delete
-    } else if(value == this.root.value){
-      let throwAwayNode = new Node()
-      throwAwayNode.setLeft(this.root)
-
+    } else if(value == this.root.value) {
+      ElementsModifier.setActionMessage("Deleting root...")
       this.toBeDeletedNode = this.root
-      this.root = BST.deleteLeft(throwAwayNode, this)
-      this.state = this.STATES.DELETING
-      this.doNotUpdate = true
+      BST.deleteRoot(this.root, this)
 
     } else {
 
@@ -233,6 +237,37 @@ export default class BST {
     this.position.x += (Math.pow(2, this.height - 2)) * this.levelWidth
     this.position.y -= this.levelHeight
 
+  }
+
+  static deleteRoot(root, bstTree) {
+    let toDelete = root
+    if(toDelete.left === undefined && toDelete.right === undefined) {    // leaf deletion
+      bstTree.root = undefined
+      bstTree.shadedNodeParent = undefined
+      bstTree.state = bstTree.STATES.DELETING
+      bstTree.doNotUpdate = true
+
+    } else if(toDelete.left === undefined || toDelete.right === undefined) { // single child case
+      let newRoot;
+
+      if(toDelete.left === undefined) {
+        newRoot = toDelete.right
+      } else { // when (toDelete.right === undefined)
+        newRoot = toDelete.left
+      }
+
+      //make the root the defined child current root
+      bstTree.root = newRoot
+      bstTree.shadedNodeParent = undefined
+      bstTree.state = bstTree.STATES.DELETING
+      bstTree.doNotUpdate = true
+
+    } else { // two child case: node.left has both childs
+      bstTree.state = bstTree.STATES.FINDINORDER // red node stays red
+
+      ElementsModifier.setActionMessage("Finding in order successor of  " + toDelete.value + " ...")
+      bstTree.toBeDeletedInOrderSuccessor = toDelete.right
+    }
   }
 
 
@@ -316,7 +351,7 @@ export default class BST {
         this.parentOfInOrderSuccessor.left = this.toBeDeletedInOrderSuccessor.right
         this.parentOfInOrderSuccessor = undefined // no longer needed
       }
-      // swithing..
+      // swithing values..
       let temp = this.toBeDeletedNode.value
       this.toBeDeletedNode.value = this.toBeDeletedInOrderSuccessor.value
       this.toBeDeletedInOrderSuccessor.value = temp
