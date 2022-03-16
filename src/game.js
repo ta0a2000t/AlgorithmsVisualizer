@@ -10,8 +10,8 @@ export default class Game {
     this.nodeSize = nodeSize
 
     this.treePos = {
-      x: nodeSize * 2,
-      y: gameHeight - nodeSize * 2 // which is the diameter of node
+      x: gameWidth / 2,
+      y: gameHeight/ 2 // which is the diameter of node
     }
 
     this.algo = undefined

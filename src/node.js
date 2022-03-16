@@ -9,6 +9,8 @@ export default class Node {
     this.nodeSize = nodeSize
     this.tree = tree
     this.count = 1; // number of nodes in subtree
+
+    this.parent = undefined
   }
 
   update(deltaTime) {
@@ -97,85 +99,9 @@ export default class Node {
     this.setPositions()
   }
 
-  // must be called from the root
-  THISISNOTCALLED_setPositions() {
-    let allLevels = new Array(0)
-    // store all levels in allLevels as a complete/full tree
-    // breadth first search
-    let q = new Array(0) // curr level
-    q.push(this)
-    while(q.length > 0) {
-      const belowLevel = new Array(0)
-      let levelHasANode = false
-      q.forEach((node) => {
-        if(node.value !== undefined) {
-          levelHasANode = true
-        }
-        if(node.left !== undefined) {
-          belowLevel.push(node.left)
-        } else {
-          belowLevel.push(new Node(undefined, {x: undefined, y: undefined}, this.nodeSize, this.tree))
-        }
-        if(node.right !== undefined) {
-          belowLevel.push(node.right)
-        } else {
-          belowLevel.push(new Node(undefined, {x: undefined, y: undefined}, this.nodeSize, this.tree))
-        }
-
-      })
-
-
-
-      if(levelHasANode !== true) { // stop and dont add to allLevels, when all nodes in the level are empty
-        break;
-      }
-
-      allLevels.push(q)
-
-      q = belowLevel
-    }
-    // allLevels = [[root], [root.left, root.right], ....[leafs]]
-
-    // start from leftmost leaf
-    const treeHeight = allLevels.length
-    if(treeHeight > this.tree.height) { // when level increases
-      this.tree.setHeight(treeHeight)
-      this.tree.moveLeftDown()
-    } else if(treeHeight < this.tree.height) { // when level decreases
-      this.tree.setHeight(treeHeight)
-      this.tree.moveRightUp()
-    }
-
-    // set the positions of the leafs
-    let leafLevel = allLevels[allLevels.length - 1]
-    for(let i = 0; i < leafLevel.length; i += 1) {
-      const node = leafLevel[i]
-      node.position.x = this.tree.position.x + (i * this.tree.levelWidth)
-      node.position.y = this.tree.position.y
-    }
-
-
-
-    // let each parent have the average of pos.x of both children
-    // start from the level above the leaf level
-    for(let level = allLevels.length - 2; level >= 0; level -= 1) {
-      let currLevel = allLevels[level]
-
-      for(let i = 0; i < currLevel.length; i += 1) {
-        let node = currLevel[i]
-        const leftChild = allLevels[level + 1][2*i]
-        const rightChild = allLevels[level + 1][2*i + 1]
-
-        node.position.y = leftChild.position.y - this.tree.levelHeight
-        node.position.x = (leftChild.position.x + rightChild.position.x) /2
-      }
-    }
-
-
-  }
-
 
   // must be called from the root
+  // fixes the positions of the tree
   setPositions() {
     let allLevels = new Array(0)
     // store all levels in allLevels as a complete/full tree
@@ -215,30 +141,100 @@ export default class Node {
     // allLevels = [[root], [root.left, root.right], ....[leafs]]
 
 
-    // set the positions of the leafs
-    let leafLevel = allLevels[allLevels.length - 1]
-    for(let i = 0; i < leafLevel.length; i += 1) {
-      const node = leafLevel[i]
-      node.position.x = this.tree.position.x + (i * this.tree.levelWidth)
-      node.position.y = this.tree.position.y
-    }
 
+    this.position.x = this.tree.position.x // for root
 
-    // let each parent have the average of pos.x of both children
-    // start from the level above the leaf level
-    for(let level = allLevels.length - 2; level >= 0; level -= 1) {
+    // start from the root level
+    for(let level = 0; level < allLevels.length; level += 1) {
       let currLevel = allLevels[level]
+      const levelPosMap = new Map();
 
       for(let i = 0; i < currLevel.length; i += 1) {
         let node = currLevel[i]
 
-        node.position.y = this.tree.position.y - this.tree.levelHeight * (allLevels.length - level - 1)
-        node.position.x =  this.tree.position.x + i * this.tree.levelWidth
+        node.position.y = this.tree.position.y + this.tree.levelHeight * (level)
+        //node.position.x = this.tree.position.x //this.tree.position.x + i * this.tree.levelWidth
+        let leftNodeX = this.tree.position.x
+        while(levelPosMap.get(leftNodeX) !== undefined) {
+          leftNodeX += this.tree.levelWidth
+        }
+
+        if(node.left !== undefined) {
+          node.left.position.x = leftNodeX
+          levelPosMap.set(node.left.position.x, 123)
+        }
+
+        if(node.right !== undefined) {
+          node.right.position.x = leftNodeX + this.tree.levelWidth
+          levelPosMap.set(node.right.position.x, 123)
+        }
 
       }
     }
 
+
+    let adjusting = true
+    while(adjusting === true) {
+      // let each parent have the average of pos.x of both children
+      // start from the level above the leaf level
+      adjusting = false
+
+      for(let level = allLevels.length - 2; level >= 0; level -= 1) {
+        let currLevel = allLevels[level]
+
+        for(let i = 0; i < currLevel.length; i += 1) {
+          let node = currLevel[i]
+          if(node.left !== undefined || node.right !== undefined) {
+            if(node.left !== undefined && node.right !== undefined) {
+              node.position.x = (node.left.position.x + node.right.position.x) / 2
+            } else if(node.left !== undefined) {
+              node.position.x = node.left.position.x + this.tree.levelWidth * 0.52 //Math.cos(Math.PI/4)
+            } else if(node.right !== undefined) {
+              node.position.x = node.right.position.x - this.tree.levelWidth * 0.52 //Math.cos(Math.PI/4)
+            }
+          }
+        }
+      }
+
+      // start from the root level
+      for(let level = 0; level < allLevels.length; level += 1) {
+        let currLevel = allLevels[level]
+        for(let i = 0; i < currLevel.length; i += 1) {
+          let node = currLevel[i]
+
+          // detect too close nodes and move them
+          for(let j = 0; j < i; j += 1) { // move if close to prev nodes
+            let prevNode = currLevel[j]
+
+            if(Math.abs(prevNode.position.x - node.position.x) < this.tree.levelWidth) {
+              adjusting = true
+              let newXPos = this.tree.levelWidth + prevNode.position.x
+              let nodeXAdjust = newXPos - node.position.x
+              node.moveSubTree(nodeXAdjust)
+            }
+          }
+
+        }
+      }
+
+
+    }
+
+
+
   }
+
+  //moves subtree by nodeXAdjust horizontal
+  moveSubTree(nodeXAdjust) {
+    this.position.x += nodeXAdjust
+    if(this.left !== undefined) {
+      this.left.moveSubTree(nodeXAdjust)
+    }
+    if(this.right !== undefined) {
+      this.right.moveSubTree(nodeXAdjust)
+    }
+  }
+
 
 
 }
