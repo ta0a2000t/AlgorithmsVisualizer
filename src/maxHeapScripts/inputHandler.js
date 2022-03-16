@@ -1,30 +1,28 @@
 export default class InputHandler {
-  constructor(game) {
-    this.game = game
+  constructor(maxHeap) {
 
-    this.insertInputEl = document.getElementById("insertInputEl")
-    document.getElementById("insertButton").addEventListener("click", insertBST)
-    document.getElementById("deleteButton").addEventListener("click", deleteBST)
+    document.querySelector("#insertButton").addEventListener("click", insertMaxHeap)
+    document.querySelector("#deleteButton").addEventListener("click", deleteMaxHeap)
 
 
-    function insertBST() {
+    function insertMaxHeap(value) {
       let value = Number(document.getElementById("insertInputEl").value) //parseInt((document.getElementById("insertInputEl")).value)
       if(isNaN(value)) {
         alert("Invalid Input! \nEnter a number")
       } else {
 
-        game.bst.insert(value)
+        maxHeap.insert(value)
       }
 
     }
 
-    function deleteBST() {
+    function deleteMaxHeap() {
       let value = Number(document.getElementById("insertInputEl").value) //parseInt((document.getElementById("insertInputEl")).value)
       if(isNaN(value)) {
         alert("Invalid Input! \nEnter a number")
       } else {
 
-        game.bst.delete(value)
+        maxHeap.delete(value)
       }
     }
   }

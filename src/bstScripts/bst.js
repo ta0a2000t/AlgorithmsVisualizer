@@ -1,10 +1,13 @@
-import Node from "./node.js"
-import ContextFunctions from "./contextFunctions.js"
-import ElementsModifier from "./elementsModifier.js"
+import Node from "../node.js"
+import ContextFunctions from "../contextFunctions.js"
+import ElementsModifier from "../elementsModifier.js"
+import InputHandler from "./inputHandler.js"
 
 // height == 0 when we have one node
 export default class BST {
   constructor(position, nodeSize) {
+    new InputHandler(this)
+
     this.root = undefined
     this.position = position
     this.nodeSize = nodeSize
@@ -38,9 +41,9 @@ export default class BST {
     // defnies the distance between nodes
 
     //parent to child
-    this.levelHeight = this.nodeSize * 1.2
+    this.levelHeight = this.nodeSize * 2
     // sibling to sibling
-    this.levelWidth = this.nodeSize * 1.2
+    this.levelWidth = this.nodeSize * 3
 
   }
 

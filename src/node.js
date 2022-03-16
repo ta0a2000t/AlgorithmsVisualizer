@@ -19,10 +19,10 @@ export default class Node {
     if(this.left !== undefined) {
       // draw a line from this node to the child
       ctx.beginPath();
-      ctx.lineWidth="2";
+      ctx.lineWidth="3";
       ctx.strokeStyle="rgba(255, 0, 0, 1)"; // red
       ctx.moveTo(this.position.x,this.position.y + this.nodeSize/2); // start from below the node circle
-      ctx.lineTo(this.left.position.x + this.nodeSize/10, this.left.position.y - this.nodeSize/2); // end above the child circle
+      ctx.lineTo(this.left.position.x, this.left.position.y - this.nodeSize/2); // end above the child circle
       ctx.stroke();
 
       this.left.draw(ctx)
@@ -30,10 +30,10 @@ export default class Node {
     if(this.right !== undefined) {
       // draw a line from this node to the child
       ctx.beginPath();
-      ctx.lineWidth="2";
+      ctx.lineWidth="3";
       ctx.strokeStyle="rgba(0, 0, 255, 1)"; // blue
       ctx.moveTo(this.position.x, this.position.y + this.nodeSize/2); // start from below the node circle
-      ctx.lineTo(this.right.position.x  - this.nodeSize/10, this.right.position.y - this.nodeSize/2); // end above the child circle
+      ctx.lineTo(this.right.position.x, this.right.position.y - this.nodeSize/2); // end above the child circle
       ctx.stroke();
 
       this.right.draw(ctx)
@@ -97,7 +97,8 @@ export default class Node {
     this.setPositions()
   }
 
-  setPositions() {
+  // must be called from the root
+  THISISNOTCALLED_setPositions() {
     let allLevels = new Array(0)
     // store all levels in allLevels as a complete/full tree
     // breadth first search
@@ -164,8 +165,8 @@ export default class Node {
         let node = currLevel[i]
         const leftChild = allLevels[level + 1][2*i]
         const rightChild = allLevels[level + 1][2*i + 1]
-        node.position.y = leftChild.position.y - this.tree.levelHeight
 
+        node.position.y = leftChild.position.y - this.tree.levelHeight
         node.position.x = (leftChild.position.x + rightChild.position.x) /2
       }
     }
@@ -174,7 +175,70 @@ export default class Node {
   }
 
 
+  // must be called from the root
+  setPositions() {
+    let allLevels = new Array(0)
+    // store all levels in allLevels as a complete/full tree
+    // breadth first search
+    let q = new Array(0) // curr level
+    q.push(this)
+    while(q.length > 0) {
+      const belowLevel = new Array(0)
+      let levelHasANode = false
+      q.forEach((node) => {
+        if(node.value !== undefined) {
+          levelHasANode = true
+        }
+        if(node.left !== undefined) {
+          belowLevel.push(node.left)
+        } else {
+          //belowLevel.push(new Node(undefined, {x: undefined, y: undefined}, this.nodeSize, this.tree))
+        }
+        if(node.right !== undefined) {
+          belowLevel.push(node.right)
+        } else {
+          //belowLevel.push(new Node(undefined, {x: undefined, y: undefined}, this.nodeSize, this.tree))
+        }
 
+      })
+
+
+
+      if(levelHasANode !== true) { // stop and dont add to allLevels, when all nodes in the level are empty
+        break;
+      }
+
+      allLevels.push(q)
+
+      q = belowLevel
+    }
+    // allLevels = [[root], [root.left, root.right], ....[leafs]]
+
+
+    // set the positions of the leafs
+    let leafLevel = allLevels[allLevels.length - 1]
+    for(let i = 0; i < leafLevel.length; i += 1) {
+      const node = leafLevel[i]
+      node.position.x = this.tree.position.x + (i * this.tree.levelWidth)
+      node.position.y = this.tree.position.y
+    }
+
+
+    // let each parent have the average of pos.x of both children
+    // start from the level above the leaf level
+    for(let level = allLevels.length - 2; level >= 0; level -= 1) {
+      let currLevel = allLevels[level]
+
+      for(let i = 0; i < currLevel.length; i += 1) {
+        let node = currLevel[i]
+
+        node.position.y = this.tree.position.y - this.tree.levelHeight * (allLevels.length - level - 1)
+        node.position.x =  this.tree.position.x + i * this.tree.levelWidth
+
+      }
+    }
+
+  }
 
 
 }

@@ -31,7 +31,7 @@ export default class ContextFunctions {
       }
       // now innerText is of length maxCharLength
       ctx.fillStyle = "black"
-      ctx.fillText(innerText, x - radius/1.7, y + radius/3)
+      ctx.fillText(innerText, x - radius/1.5, y + radius/3)
 
     }
 }

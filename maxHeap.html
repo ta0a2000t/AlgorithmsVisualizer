@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Max-Heap Visualization</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+
+    <body>
+        <h1>
+          Max-Heap Visualization
+        </h1>
+        <form>
+          <label>Number: <input id="insertInputEl" type="text" maxlength="3"></label>
+          <input id="insertButton" type="button" value="insert">
+          <input id="deleteButton" type="button" value="delete">
+        </form>
+
+        <br>
+        <div id="actionBox">
+          Current Action: <div id="actionMessage"> no action. </div>
+        </div>
+        <canvas id="gameScreen"></canvas>
+
+
+    </body>
+
+    <script type="module" src="src/index.js"></script>
+</html>
