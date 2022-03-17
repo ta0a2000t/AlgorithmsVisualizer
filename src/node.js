@@ -52,6 +52,10 @@ export default class Node {
     this.right = newNode
   }
 
+  setValue(value) {
+    this.value = value
+  }
+
   // returns max height of this subtree
   getHeight() {
     let leftHeight = 0

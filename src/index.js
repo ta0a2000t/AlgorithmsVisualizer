@@ -5,7 +5,7 @@ let canvas = document.querySelector("#gameScreen");
 
 let ctx = canvas.getContext("2d");
 
-const FPS = 10;
+const FPS = 0.8;
 const GAME_WIDTH = 1300;
 const GAME_HEIGHT = 600;
 const NODE_SIZE = 34 // radius of node

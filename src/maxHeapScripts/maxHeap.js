@@ -48,10 +48,6 @@ export default class MaxHeap {
 
     this.doNotUpdate = false
 
-    this.blue = {
-      node: undefined, // for sifting
-      index: undefined
-    }
 
      // for sifting
      this.blueNode = undefined
@@ -62,6 +58,11 @@ export default class MaxHeap {
   }
 
   update(deltaTime) {
+    console.log(this.size)
+    console.log(this.state)
+    console.log("---")
+
+
     if(this.state === this.STATES.INSERT) {
       if(this.doNotUpdate === false) {
 
@@ -71,6 +72,12 @@ export default class MaxHeap {
     } else if(this.state === this.STATES.SIFT_UP) {
       if(this.doNotUpdate === false) {
         this.siftUp()
+      } else {
+        this.doNotUpdate = false
+      }
+    } else if(this.state === this.STATES.FIND_REPLACEMENT) {
+      if(this.doNotUpdate === false) {
+        this.siftDown()
       } else {
         this.doNotUpdate = false
       }
@@ -105,8 +112,9 @@ export default class MaxHeap {
 
       this.array.push(newNode)
       this.root = newNode
-      this.setBlue(newNode, this.size)
       this.size += 1
+      this.setBlue(newNode, this.size - 1)
+
 
     } else {
 
@@ -119,27 +127,164 @@ export default class MaxHeap {
       if(index % 2 === 0) { // inserting as right child
         let parentIndex = (index - 2) / 2
         let parentNode = this.array[parentIndex]
-        parentNode.right = newNode
+        parentNode.setRight(newNode)
 
       } else { // inserting as left child
         let parentIndex = (index - 1) / 2
         let parentNode = this.array[parentIndex]
         parentNode.setLeft(newNode)
       }
-      this.setBlue(newNode, this.size)
+
       this.size += 1
+      this.setBlue(newNode, this.size - 1)
       this.root.setPositions()
     }
-
+    this.doNotUpdate = true
     this.state = this.STATES.SIFT_UP
   }
 
   siftUp() {
+    let index = this.blueIndex
+
+    if(index === 0) { // reached root
+      this.setBlue(undefined, undefined)
+      this.state = this.STATES.NOACTION
+
+    } else {
+
+      let parentNode = undefined
+      let parentIndex = undefined
+
+      if(index % 2 === 0) { // inserting as right child
+        parentIndex = (index - 2) / 2
+        parentNode = this.array[parentIndex]
+
+      } else { // inserting as left child
+        parentIndex = (index - 1) / 2
+        parentNode = this.array[parentIndex]
+      }
+
+      // go up if > parent
+      if(parentNode.value < this.blueNode.value) {
+        // swap values
+        let temp = parentNode.value
+        parentNode.setValue(this.blueNode.value)
+        this.blueNode.setValue(temp)
+        // make the parent the blue node
+        this.setBlue(parentNode, parentIndex)
+
+      } else { // stop
+        this.setBlue(undefined, undefined)
+        this.state = this.STATES.NOACTION
+      }
+    }
 
   }
 
 
-  extract() {}
+  extract() {
+    if(this.size > 0) {
+      this.setRed(this.root, 0)
+      this.state = this.STATES.FIND_REPLACEMENT
+      this.doNotUpdate = true
+    }
+  }
+
+
+  siftDown() {
+    if(this.size === 1) { // removing the root
+      this.size -= 1
+      this.root = undefined
+      this.setRed(undefined, undefined)
+      this.state = this.STATES.NOACTION
+      this.array.pop()
+    } else { // mark the last node blue
+
+      if(this.blueNode === undefined) {
+        // just mark it at this frame
+
+        this.setBlue(this.array[this.size - 1], this.size - 1)
+
+      } else { // marked in prev frame
+        if(this.redIndex === 0) { // if have not swapped yet
+          // swap values
+          let tempVal = this.redNode.value
+          this.redNode.value = this.blueNode.value
+          this.blueNode.value = tempVal
+
+          // swap colors: blue & red
+          let tempNode = this.redNode
+          let tempIndex = this.redIndex
+          this.setRed(this.blueNode, this.blueIndex)
+          this.setBlue(tempNode, tempIndex)
+
+
+
+        } else { // if already swapped
+          if(this.redNode !== undefined) { // remove the red
+
+            // remove it from its parentNode
+            let parentNode = undefined
+            let parentIndex = undefined
+            let index = this.redIndex
+
+            if(index % 2 === 0) { // deleting right child
+              parentIndex = (index - 2) / 2
+              parentNode = this.array[parentIndex]
+              parentNode.setRight(undefined)
+            } else { // deleting left child
+              parentIndex = (index - 1) / 2
+              parentNode = this.array[parentIndex]
+              parentNode.setLeft(undefined)
+            }
+
+
+            // remove from end of array & clear red
+            this.setRed(undefined, undefined)
+            this.array.pop()
+
+          } else { // now move down
+            let child = this.blueNode.left
+            if(child !== undefined && child.value > this.blueNode.value) {
+               // swapp w left child
+                // replace value
+                let tempVal = child.value
+                child.value = this.blueNode.value
+                this.blueNode.value = tempVal
+                // reset blue
+                let childIndex = 2 * this.blueIndex + 1
+                this.setBlue(child, childIndex)
+
+            } else {
+              child = this.blueNode.right
+              if(child !== undefined && child.value > this.blueNode.value) {
+                 // swapp w right child
+                 // replace value
+                 let tempVal = child.value
+                 child.value = this.blueNode.value
+                 this.blueNode.value = tempVal
+                 // reset blue
+                 let childIndex = 2 * this.blueIndex + 2
+                 this.setBlue(child, childIndex)
+
+              } else {
+                // stop sifting
+                this.size -= 1
+                this.setBlue(undefined, undefined)
+                this.state = this.STATES.NOACTION
+              }
+
+
+          }
+
+
+
+          }
+        }
+      }
+
+    }
+  }
 
   setRed(node, index) {
     this.redNode = node
@@ -150,6 +295,8 @@ export default class MaxHeap {
     this.blueNode = node
     this.blueIndex = index
   }
+
+
 
 
 
