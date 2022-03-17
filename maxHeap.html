@@ -5,22 +5,25 @@
 
     <head>
         <meta charset="UTF-8">
-        <title>Max-Heap Visualization</title>
+        <title>Max-Heap</title>
         <link rel="stylesheet" href="style.css">
     </head>
 
 
-    <body>
+    <body id="maxHeap">
         <h1>
           Max-Heap Visualization
         </h1>
         <form>
           <label>Number: <input id="insertInputEl" type="text" maxlength="3"></label>
           <input id="insertButton" type="button" value="insert">
-          <input id="deleteButton" type="button" value="delete">
+          <br>
+          <input id="extractButton" type="button" value="Extract Max">
+
         </form>
 
         <br>
+
         <div id="actionBox">
           Current Action: <div id="actionMessage"> no action. </div>
         </div>

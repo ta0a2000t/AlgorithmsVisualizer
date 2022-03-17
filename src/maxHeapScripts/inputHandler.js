@@ -2,10 +2,10 @@ export default class InputHandler {
   constructor(maxHeap) {
 
     document.querySelector("#insertButton").addEventListener("click", insertMaxHeap)
-    document.querySelector("#deleteButton").addEventListener("click", deleteMaxHeap)
+    document.querySelector("#extractButton").addEventListener("click", extractMaxHeap)
 
 
-    function insertMaxHeap(value) {
+    function insertMaxHeap() {
       let value = Number(document.getElementById("insertInputEl").value) //parseInt((document.getElementById("insertInputEl")).value)
       if(isNaN(value)) {
         alert("Invalid Input! \nEnter a number")
@@ -16,13 +16,13 @@ export default class InputHandler {
 
     }
 
-    function deleteMaxHeap() {
+    function extractMaxHeap() {
       let value = Number(document.getElementById("insertInputEl").value) //parseInt((document.getElementById("insertInputEl")).value)
       if(isNaN(value)) {
         alert("Invalid Input! \nEnter a number")
       } else {
 
-        maxHeap.delete(value)
+        maxHeap.extract(value)
       }
     }
   }

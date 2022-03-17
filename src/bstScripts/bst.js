@@ -3,16 +3,17 @@ import ContextFunctions from "../contextFunctions.js"
 import ElementsModifier from "../elementsModifier.js"
 import InputHandler from "./inputHandler.js"
 
-// height == 0 when we have one node
 export default class BST {
   constructor(position, nodeSize) {
+
+    //////////////NECESSARY FOR ALL TREES////////////
+
     new InputHandler(this)
 
     this.root = undefined
-    this.position = position
     this.nodeSize = nodeSize
-    this.height = 0
 
+    // these states can differ by tree
     this.STATES = {
       NOACTION: 0,
       INSERT: 1,
@@ -22,6 +23,21 @@ export default class BST {
     }
 
     this.state = this.STATES.NOACTION
+
+    // below used by Node ////
+
+    this.position = position // position of the bottom left leaf node
+
+    // defnies the distance between nodes
+    //distance from parent to child
+    this.levelHeight = this.nodeSize * 2
+    // distance from sibling to sibling
+    this.levelWidth = this.nodeSize * 3
+
+    // above used by Node ////
+
+    ////////////////////////////////////////////////////////////////
+
 
     this.shadedNode = undefined // shade node to visualize insertion/deletion
     this.currInsertVal = undefined
@@ -37,18 +53,9 @@ export default class BST {
     this.toBeDeletedInOrderSuccessor = undefined // in order successor (will be a leaf)
     this.findLeftMostGrandsonNode = undefined // this will be left child (undefined)
 
-
-    // defnies the distance between nodes
-
-    //parent to child
-    this.levelHeight = this.nodeSize * 2
-    // sibling to sibling
-    this.levelWidth = this.nodeSize * 3
-
   }
 
   update(deltaTime) {
-    console.log(this.state)
     if(this.state === this.STATES.INSERT) {
       if(this.doNotUpdate === false) {
         this.insert(this.currInsertVal)
@@ -68,11 +75,7 @@ export default class BST {
           this.state = this.STATES.NOACTION
           if(this.root !== undefined) { // does not run when deleted root and now tree is empty
             this.root.setPositions() // fixes the positions
-            this.height = this.root.getHeight()
-          } else {
-            this.height = 0
           }
-
         } else {
           this.doNotUpdate = false
         }
@@ -120,7 +123,6 @@ export default class BST {
     if(this.root === undefined) {
       ElementsModifier.setActionMessage("Tree is empty. Let " + value + " be the root.")
 
-      this.height = 1
       this.doNotUpdate = true
 
       this.root = new Node(value, {x: this.position.x, y: this.position.y}, this.nodeSize, this)
@@ -226,22 +228,6 @@ export default class BST {
     }
   }
 
-
-  setHeight(k) {
-    this.height = k
-  }
-
-  // used to adjust the positioon of the tree since it moves up and right each time we add a new level
-  moveLeftDown() {
-    this.position.x -= (Math.pow(2, this.height - 3)) * this.levelWidth
-    this.position.y += this.levelHeight
-  }
-  moveRightUp() {
-    console.log(this.height)
-    this.position.x += (Math.pow(2, this.height - 2)) * this.levelWidth
-    this.position.y -= this.levelHeight
-
-  }
 
   static deleteRoot(root, bstTree) {
     let toDelete = root

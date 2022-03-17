@@ -9,18 +9,19 @@ export default class Game {
     this.gameHeight = gameHeight
     this.nodeSize = nodeSize
 
+    // left-bottom leaf position
     this.treePos = {
-      x: gameWidth / 2,
-      y: gameHeight/ 2 // which is the diameter of node
+      x: this.nodeSize * 2,
+      y: this.nodeSize * 3 // which is the diameter of node
     }
 
     this.algo = undefined
   }
 
   start(algo) {
-    if(algo === Algorithms.bst) {
+    if(algo === Algorithms.algos.bst) {
       this.algo = new BST(this.treePos, this.nodeSize)
-    } else if(algo === Algorithms.maxHeap) {
+    } else if(algo === Algorithms.algos.maxHeap) {
       this.algo = new MaxHeap(this.treePos, this.nodeSize)
     }
   }

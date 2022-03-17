@@ -8,7 +8,6 @@ export default class Node {
     this.position = position
     this.nodeSize = nodeSize
     this.tree = tree
-    this.count = 1; // number of nodes in subtree
 
     this.parent = undefined
   }
@@ -73,8 +72,6 @@ export default class Node {
     let insertLeft = false
 
     while(curr !== undefined) {
-      curr.count += 1 // since we will insert this below this node
-
       prev = curr
       if(value < curr.value) {
         insertLeft = true

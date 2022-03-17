@@ -8,15 +8,22 @@ let ctx = canvas.getContext("2d");
 const FPS = 10;
 const GAME_WIDTH = 1300;
 const GAME_HEIGHT = 600;
-const NODE_SIZE = 30 // radius of node
+const NODE_SIZE = 34 // radius of node
 
 canvas.width = GAME_WIDTH;
 canvas.height = GAME_HEIGHT;
-ctx.font = '15px serif';
+ctx.font = '17px serif';
 
 let game = new Game(GAME_WIDTH, GAME_HEIGHT, NODE_SIZE);
 
-game.start(Algorithms.bst);
+let algorithm = undefined
+if(document.body.id === "bst") {
+  algorithm = Algorithms.algos.bst
+} else if(document.body.id === "maxHeap") {
+  algorithm = Algorithms.algos.maxHeap
+}
+
+game.start(algorithm);
 
 let lastTime = 0;
 
