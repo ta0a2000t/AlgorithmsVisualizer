@@ -21,6 +21,8 @@ if(document.body.id === "bst") {
   algorithm = Algorithms.algos.bst
 } else if(document.body.id === "maxHeap") {
   algorithm = Algorithms.algos.maxHeap
+} else if(document.body.id === "minHeap") {
+  algorithm = Algorithms.algos.minHeap
 }
 
 game.start(algorithm);

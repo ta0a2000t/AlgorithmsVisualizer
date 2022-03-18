@@ -2,6 +2,7 @@ import Algorithms from "./algorithms.js"
 
 import BST from "./bstScripts/bst.js"
 import MaxHeap from "./maxHeapScripts/maxHeap.js"
+import MinHeap from "./minHeapScripts/minHeap.js"
 
 export default class Game {
   constructor(gameWidth, gameHeight, nodeSize) {
@@ -23,6 +24,9 @@ export default class Game {
       this.algo = new BST(this.treePos, this.nodeSize)
     } else if(algo === Algorithms.algos.maxHeap) {
       this.algo = new MaxHeap(this.treePos, this.nodeSize)
+      this.algo.initEventHandler()
+    } else if(algo === Algorithms.algos.minHeap) {
+      this.algo = new MinHeap(this.treePos, this.nodeSize)
       this.algo.initEventHandler()
     }
   }
