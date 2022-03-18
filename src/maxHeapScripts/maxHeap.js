@@ -7,8 +7,7 @@ export default class MaxHeap {
   constructor(position, nodeSize) {
 
     //////////////NECESSARY FOR ALL TREES////////////
-
-    new InputHandler(this)
+    this.actionHistroy = new Array(0) // for undo
 
     this.root = undefined
     this.nodeSize = nodeSize
@@ -16,13 +15,13 @@ export default class MaxHeap {
     // these states can differ by tree
     this.STATES = {
       NOACTION: 0,
-      INSERT: 1, // add it to the end of the array and mark it blue, switch to SIFT_UP state
+      //insert() // add it to the end of the array and mark it blue, switch to SIFT_UP state
       SIFT_UP: 2, // heapify, traverse up, switch to NOACTION state
 
-      EXTRACT: 3, // mark root red, switch to FIND_REPLACEMENT state
+      //extract() // mark root red, switch to FIND_REPLACEMENT state
       FIND_REPLACEMENT: 4, // finds replacement of the marked root at the leaf with blue color, and replace the value/colors of the leaf and the root, then switch to DELETING
-      DELETING: 6, // remove the red node, switch to SIFT_DOWN state
-      SIFT_DOWN: 7 // sift the blue node down, switch to NOACTION
+      //DELETING: 6, // remove the red node, switch to SIFT_DOWN state
+      //SIFT_DOWN: 7 // sift the blue node down, switch to NOACTION
     }
 
     this.state = this.STATES.NOACTION
@@ -57,11 +56,13 @@ export default class MaxHeap {
     this.redIndex = undefined
   }
 
-  update(deltaTime) {
-    console.log(this.size)
-    console.log(this.state)
-    console.log("---")
+  // this is called from Game class
+  // event listener must only be called ONCE
+  initEventHandler() {
+    new InputHandler(this)
+  }
 
+  update(deltaTime) {
 
     if(this.state === this.STATES.INSERT) {
       if(this.doNotUpdate === false) {
@@ -104,9 +105,73 @@ export default class MaxHeap {
     ContextFunctions.drawNodeArray(ctx, "#e9f0e9", "#0b780b", 2, this.blueIndex, this.redIndex, this.array, this.position.x + 50, this.position.y - this.nodeSize * 2, this.nodeSize)
   }
 
+  isNOACTION() {
+    return this.state === this.STATES.NOACTION
+  }
+
+  undo() {
+
+    if(this.actionHistroy.length > 0) {
+      let prevTree = this.actionHistroy.pop()
+      this.updateAttributes(prevTree)
+    }
+  }
+
+  // runs whenever we press a button, othr than undoButton
+  pushActionHistory() {
+    this.actionHistroy.push(this.deepCopy())
+  }
+
+  // returns a deep copied version of this tree
+  deepCopy() {
+    let newPos = {
+      x: this.position.x,
+      y: this.position.y
+    }
+    let newTree = new MaxHeap(newPos, this.nodeSize)
+
+    newTree.size = this.size
+
+    if(this.root !== undefined) {
+      newTree.root = this.root.deepCopy(newTree)
+
+      newTree.array = MaxHeap.buildArray(newTree.root, newTree.size)
+    }
+
+
+    // this is only run when isNOACTION
+    // so there is no defined red/blue nodes, no need to copy them
+
+    return newTree
+  }
+
+  static buildArray(root, size) {
+    let array = new Array(size)
+    MaxHeap.buildArrayAux(root, array, 0)
+    return array
+  }
+
+  // recursive
+  static buildArrayAux(node, array, index) {
+    array[index] = node
+    if(node.left !== undefined) {
+      MaxHeap.buildArrayAux(node.left, array, 2 * index + 1)
+    }
+    if(node.right !== undefined) {
+      MaxHeap.buildArrayAux(node.right, array, 2 * index + 2)
+    }
+  }
+
+  // sets the current entries of this tree into those of the deep copied tree
+  updateAttributes(prevTree) {
+    this.position = prevTree.position
+    this.size = prevTree.size
+    this.root = prevTree.root
+    this.array = prevTree.array
+  }
+
+
   insert(value) {
-
-
     if(this.size === 0) {
       let newNode = new Node(value, {x: this.position.x, y: this.position.y}, this.nodeSize, this)
 
@@ -295,8 +360,6 @@ export default class MaxHeap {
     this.blueNode = node
     this.blueIndex = index
   }
-
-
 
 
 

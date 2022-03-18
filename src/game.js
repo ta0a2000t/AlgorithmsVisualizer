@@ -23,6 +23,7 @@ export default class Game {
       this.algo = new BST(this.treePos, this.nodeSize)
     } else if(algo === Algorithms.algos.maxHeap) {
       this.algo = new MaxHeap(this.treePos, this.nodeSize)
+      this.algo.initEventHandler()
     }
   }
 

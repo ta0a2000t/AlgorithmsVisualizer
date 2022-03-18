@@ -44,6 +44,26 @@ export default class Node {
     ContextFunctions.drawNode(this.value, maxCharLength, ctx, this.position.x, this.position.y, this.nodeSize/2,  undefined, "black", 2)
   }
 
+  // returns a deep copied reference to this node
+  deepCopy(newTree) {
+    let newPos = undefined
+    if(this.position !== undefined) {
+      newPos = {
+        x: this.position.x,
+        y: this.position.y
+      }
+    }
+
+    let newNode = new Node(this.value, newPos, this.nodeSize, newTree)
+    if(this.left !== undefined) {
+      newNode.left = this.left.deepCopy(newTree)
+    }
+    if(this.right !== undefined) {
+      newNode.right = this.right.deepCopy(newTree)
+    }
+    return newNode
+  }
+
   setLeft(newNode) {
     this.left = newNode
   }
