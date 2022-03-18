@@ -1,6 +1,7 @@
 import InputHandler from "./inputHandler.js"
 import Node from "../node.js"
 import ContextFunctions from "../contextFunctions.js"
+import ElementsModifier from "../elementsModifier.js"
 
 
 export default class MaxHeap {
@@ -172,6 +173,8 @@ export default class MaxHeap {
 
 
   insert(value) {
+    ElementsModifier.setActionMessage("Push at end of array")
+
     if(this.size === 0) {
       let newNode = new Node(value, {x: this.position.x, y: this.position.y}, this.nodeSize, this)
 
@@ -212,6 +215,8 @@ export default class MaxHeap {
     let index = this.blueIndex
 
     if(index === 0) { // reached root
+      ElementsModifier.setActionMessage("No action.")
+
       this.setBlue(undefined, undefined)
       this.state = this.STATES.NOACTION
 
@@ -231,6 +236,8 @@ export default class MaxHeap {
 
       // go up if > parent
       if(parentNode.value < this.blueNode.value) {
+        ElementsModifier.setActionMessage(this.blueNode.value + " > parent. Go up...")
+
         // swap values
         let temp = parentNode.value
         parentNode.setValue(this.blueNode.value)
@@ -239,6 +246,8 @@ export default class MaxHeap {
         this.setBlue(parentNode, parentIndex)
 
       } else { // stop
+        ElementsModifier.setActionMessage("No action.")
+
         this.setBlue(undefined, undefined)
         this.state = this.STATES.NOACTION
       }
@@ -248,6 +257,8 @@ export default class MaxHeap {
 
 
   extract() {
+    ElementsModifier.setActionMessage("Marking root as red.")
+
     if(this.size > 0) {
       this.setRed(this.root, 0)
       this.state = this.STATES.FIND_REPLACEMENT
@@ -258,6 +269,8 @@ export default class MaxHeap {
 
   siftDown() {
     if(this.size === 1) { // removing the root
+      ElementsModifier.setActionMessage("No action.")
+
       this.size -= 1
       this.root = undefined
       this.setRed(undefined, undefined)
@@ -266,12 +279,15 @@ export default class MaxHeap {
     } else { // mark the last node blue
 
       if(this.blueNode === undefined) {
+        ElementsModifier.setActionMessage("End of array is a replacement.")
         // just mark it at this frame
 
         this.setBlue(this.array[this.size - 1], this.size - 1)
 
       } else { // marked in prev frame
         if(this.redIndex === 0) { // if have not swapped yet
+          ElementsModifier.setActionMessage("Swap " + this.redNode.value + " & " + this.blueNode.value)
+
           // swap values
           let tempVal = this.redNode.value
           this.redNode.value = this.blueNode.value
@@ -287,6 +303,7 @@ export default class MaxHeap {
 
         } else { // if already swapped
           if(this.redNode !== undefined) { // remove the red
+            ElementsModifier.setActionMessage("Pop red from array")
 
             // remove it from its parentNode
             let parentNode = undefined
@@ -309,8 +326,11 @@ export default class MaxHeap {
             this.array.pop()
 
           } else { // now move down
+
             let child = this.blueNode.left
             if(child !== undefined && child.value > this.blueNode.value) {
+              ElementsModifier.setActionMessage(this.blueNode.value + " < left child. Go down...")
+
                // swapp w left child
                 // replace value
                 let tempVal = child.value
@@ -323,6 +343,8 @@ export default class MaxHeap {
             } else {
               child = this.blueNode.right
               if(child !== undefined && child.value > this.blueNode.value) {
+                ElementsModifier.setActionMessage(this.blueNode.value + " < right child. Go down...")
+
                  // swapp w right child
                  // replace value
                  let tempVal = child.value
@@ -333,6 +355,7 @@ export default class MaxHeap {
                  this.setBlue(child, childIndex)
 
               } else {
+                ElementsModifier.setActionMessage("No action.")
                 // stop sifting
                 this.size -= 1
                 this.setBlue(undefined, undefined)
