@@ -1,11 +1,25 @@
 import Game from "./game.js"
 import Algorithms from "./algorithms.js"
 
+////////////////////////
+const express = require("express")
+const app = express()
+
+app.get("/", function(res, req) {
+  res.send("Working!@#")
+})
+
+app.listen(process.env.PORT || 5000)
+
+
+
+
+//////////////////////
 let canvas = document.querySelector("#gameScreen");
 
 let ctx = canvas.getContext("2d");
 
-const FPS = 0.8;
+const FPS = 0.5;
 const GAME_WIDTH = 1300;
 const GAME_HEIGHT = 600;
 const NODE_SIZE = 34 // radius of node
