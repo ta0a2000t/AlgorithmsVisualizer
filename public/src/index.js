@@ -1,20 +1,6 @@
 import Game from "./game.js"
 import Algorithms from "./algorithms.js"
 
-////////////////////////
-const express = require("express")
-const app = express()
-
-app.get("/", function(req, res) {
-  res.send("Working!@#")
-})
-
-app.listen(process.env.PORT || 5000)
-
-
-
-
-//////////////////////
 let canvas = document.querySelector("#gameScreen");
 
 let ctx = canvas.getContext("2d");

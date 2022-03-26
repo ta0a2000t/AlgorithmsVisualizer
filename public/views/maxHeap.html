@@ -2,21 +2,26 @@
 
 
 <html lang="en">
+
     <head>
         <meta charset="UTF-8">
-        <title>BST</title>
-        <link rel="stylesheet" href="style.css">
+        <title>Max-Heap</title>
+        <link rel="stylesheet" href="../css/style.css">
     </head>
 
 
-    <body id="bst">
+    <body id="maxHeap">
         <h1>
-          BST Visualization
+          Max-Heap Visualization
         </h1>
         <form>
           <label>Number: <input id="insertInputEl" type="text" maxlength="3"></label>
           <input id="insertButton" type="button" value="insert">
-          <input id="deleteButton" type="button" value="delete">
+
+          <input id="extractButton" type="button" value="Extract Max">
+          <input id="undoButton" type="button" value="Undo">
+
+
         </form>
 
         <br>
@@ -29,5 +34,5 @@
 
     </body>
 
-    <script type="module" src="src/index.js"></script>
+    <script type="module" src="../src/index.js"></script>
 </html>
