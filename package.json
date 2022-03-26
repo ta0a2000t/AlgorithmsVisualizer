@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/ta0a2000t/AlgorithmsVisualizer/issues"
   },
-  "homepage": "https://github.com/ta0a2000t/AlgorithmsVisualizer#readme"
+  "homepage": "https://github.com/ta0a2000t/AlgorithmsVisualizer#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
 }
